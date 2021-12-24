@@ -69,6 +69,13 @@ contract PlatziPunks is ERC721, ERC721Enumerable, PlatziPunksDNA {
         return string(abi.encodePacked(params, "&topType=", getTopType(_dna)));
     }
 
+    function imageByDNA(uint256 _dna) public view returns (string memory) {
+        string memory baseURI = _baseURI();
+        string memory paramsURI = _paramsURI(_dna);
+
+        return string(abi.encodePacked(baseURI, "?", paramsURI));
+    }
+
     function tokenURI(uint256 _tokenId)
         public
         view
@@ -77,9 +84,16 @@ contract PlatziPunks is ERC721, ERC721Enumerable, PlatziPunksDNA {
     {
         require(_exists(_tokenId), "Token ID not exists");
 
+        uint256 dna = tokenDNA[_tokenId];
+        string memory image = imageByDNA(dna);
+
         string memory jsonURI = Base64.encode(
             abi.encodePacked(
-                '{ "name": "PlatziPunks", "symbol": "PLPKS", tokenId, "descripcion": "Platzi Punks are randomized Avataaars stored on chain to teach DApp development on Platzi", "image": "" }'
+                '{ "name": "PlatziPunks #',
+                _tokenId,
+                '", "description": "Platzi Punks are randomized Avataaars stored on chain to teach DApp development on Platzi", "image": "',
+                image,
+                '"}'
             )
         );
 
